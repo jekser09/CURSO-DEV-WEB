@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="CSS/index.css" rel="stylesheet" type="text/css"/>
+    <script src = "JS/index.js" defer></script>
+    <title>Users Express</title>
+</head>
+<body>
+    <h1>Express APP</h1>
+    <form id="form-users">
+        <h3>Usuarios</h3>
+        <label for="inp-name">Nombre:</label>
+        <input id="inp-name" name="name" type="text" minlength="3"/>
+        <label for="inp-lastname">Apellido:</label>
+        <input id="inp-lastname" name="lastname" type="text" minlength="3"/>
+        <button type="submit">Crear Usuario</button>
+    </form>
+    <div>
+        <ul id="users-list"></ul>
+    </div>
+</body>
+</html>
