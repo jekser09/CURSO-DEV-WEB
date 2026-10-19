@@ -1,22 +1,24 @@
+process.loadEnvFile()
+
 const mongoose = require('mongoose')
 
-mongoose.connect('mongodb+srv://jekser09_db_user:oy2kR32GiPBL4G9N@cluster0.etnky4t.mongodb.net/?appName=Cluster0')
+mongoose.connect(process.env.MONGO_URI)
 
-const User = mongoose.model('User',{
-    username:String,
-    edad:Number
+const Animal = mongoose.model('Animal',{
+    name: String,
+    type: String
 })
 
 const crear = async () => {
-    const user = new User({
-        username: 'chanchito triste',
-        edad: 25
+    const animal = new Animal({
+        name: 'chanchito',
+        type: 'triste'
     })
-    const savedUser = await user.save()
-    console.log(savedUser)
+    const savedAnimal = await animal.save()
+    console.log(savedAnimal)
 }
 
-//crear()
+crear()
 
 const buscarTodo = async () => {
     const users = await User.find()
@@ -42,7 +44,7 @@ const actualizar = async () => {
 //actualizar()
 
 const eliminar = async () => {
-    const user = await User.findOne({username:'chanchito triste'})
+    const user = await User.findOne({_id:'6ac66fac04a84edf4f89061d'})
     if(user){
         await user.deleteOne()
         console.log('Chanchito eliminado')
