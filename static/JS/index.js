@@ -1,61 +1,45 @@
-const animalsForm = document.getElementById('form-animals')
-const animalsList = document.getElementById('animals-list')
+if(localStorage.getItem('jwt')) window.location.href = '/form/animals'
+//====================================================================
 
-const getAnimals = async () => {
-    animalsList.innerHTML = ''
-    try{
-        const animals = await fetch('/animals')
-        if(animals.ok && animals.status === 200){
-            const data = await animals.json()
-            const fragment = document.createDocumentFragment()
-            for(const dat of data){
-                const item = document.createElement('li')
-                item.innerHTML = `${dat.name} ${dat.type} <button data-id = ${dat._id}>Eliminar</button>`
-                fragment.appendChild(item)
-            }
-            animalsList.appendChild(fragment)
-        }
-    }catch(error){ console.error(error) }
-}
-
-const delAnimals = async (id) => {
-    try{
-        const animals = await fetch(`/animals/${id}`,{ method:'DELETE' })
-        if(animals.ok && animals.status === 204) return true
-        else alert('No fue posible eliminar el animal')
-    }catch(error){ console.error(error) }
-    return false
-}
-
-animalsForm.onsubmit = async (e) => {
+async function auth (e) {
     e.preventDefault()
-    const formData = new FormData(animalsForm)
+    const errorNode = e.target.parentNode.querySelector('.div-error')
+    errorNode.innerHTML = ''
+    const formData = new FormData(e.target)
     const data = Object.fromEntries(formData.entries())
     try{
-        const response = await fetch('/animals',
-            {
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            }
-        )
-        if(response.ok && response.status === 201){
-            animalsForm.reset()
-            await getAnimals()
-        }else alert('No fue posible registrar el animal')
-    }catch(error){ console.error(error) }
+        const response = await fetch(`/${e.target.name}`,{
+        method:'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(data),
+        })
+        const responseData = await response.text()
+        if(response.status >= 300) errorNode.innerHTML = responseData
+        else{
+            localStorage.setItem('jwt',`Bearer ${responseData}`)
+            window.location.href = '/form/animals'
+        }
+    }catch(e){ errorNode.innerHTML = e }
+    e.target.reset()
 }
 
-animalsList.addEventListener("click",async (e) => {
-    const element = e.target
-    if(element.matches('button') && element.dataset.id){
-        if(await delUsers(element.dataset.id)){
-            element.parentNode.remove()
-            alert('Animal eliminado exitosamente')
-        }
-    }
+//EVENTS
+document.getElementById('login-form').onsubmit = auth
+
+document.getElementById('register-form').onsubmit = auth
+
+document.getElementById('a-register').addEventListener('click',(e)=>{
+    e.preventDefault()
+    document.getElementById('container-login-form').classList.toggle('div-hidden')
+    document.getElementById('container-register-form').classList.toggle('div-hidden')
+    document.getElementById('login-form').reset()
 })
 
-getAnimals()
+document.getElementById('a-login').addEventListener('click',(e)=>{
+    e.preventDefault()
+    document.getElementById('container-login-form').classList.toggle('div-hidden')
+    document.getElementById('container-register-form').classList.toggle('div-hidden')
+    document.getElementById('register-form').reset()
+})
